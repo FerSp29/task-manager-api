@@ -1,0 +1,46 @@
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using TaskManager.Api.Middlewares;
+using TaskManager.Application.Interfaces;
+using TaskManager.Application.Services;
+using TaskManager.Infrastructure.Data;
+using TaskManager.Infrastructure.Repositories;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// PostgreSQL
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Inyección de dependencias (Clean Architecture)
+builder.Services.AddScoped<IProyectoRepository, ProyectoRepository>();
+builder.Services.AddScoped<ITareaRepository, TareaRepository>();
+builder.Services.AddScoped<IProyectoService, ProyectoService>();
+builder.Services.AddScoped<ITareaService, TareaService>();
+
+var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
+
+// Aplica migraciones automáticamente al arrancar (clave para Azure)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();

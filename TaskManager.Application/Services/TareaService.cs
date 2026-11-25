@@ -64,11 +64,18 @@ public class TareaService(ITareaRepository tareaRepo, IProyectoRepository proyec
         var tarea = await tareaRepo.GetByIdAsync(id)
             ?? throw new NotFoundException($"No se encontró la tarea con ID {id}.");
 
+        var proyecto = await proyectoRepo.GetByIdAsync(tarea.ProyectoId)
+            ?? throw new NotFoundException($"No se encontró el proyecto con ID {tarea.ProyectoId}.");
+
+        var fechaLimiteUtc = DateTime.SpecifyKind(dto.FechaLimite, DateTimeKind.Utc);
+        if (fechaLimiteUtc > proyecto.FechaFin)
+            throw new BusinessRuleException("La fecha límite de la tarea no puede superar la fecha de finalización del proyecto.");
+
         tarea.Titulo = dto.Titulo;
         tarea.Descripcion = dto.Descripcion;
         tarea.Estado = dto.Estado;
         tarea.Prioridad = dto.Prioridad;
-        tarea.FechaLimite = DateTime.SpecifyKind(dto.FechaLimite, DateTimeKind.Utc);
+        tarea.FechaLimite = fechaLimiteUtc;
 
         await tareaRepo.UpdateAsync(tarea);
         return MapToDto(tarea);

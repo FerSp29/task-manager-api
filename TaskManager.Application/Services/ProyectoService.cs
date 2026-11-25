@@ -46,10 +46,14 @@ public class ProyectoService(IProyectoRepository proyectoRepo) : IProyectoServic
         if (dto.FechaFin < dto.FechaInicio)
             throw new BusinessRuleException("La fecha de finalización no puede ser anterior a la fecha de inicio.");
 
+        var fechaFinUtc = DateTime.SpecifyKind(dto.FechaFin, DateTimeKind.Utc);
+        if (proyecto.Tareas.Any(t => t.FechaLimite > fechaFinUtc))
+            throw new BusinessRuleException("La fecha de finalización del proyecto no puede ser anterior a la fecha límite de sus tareas existentes.");
+
         proyecto.Nombre = dto.Nombre;
         proyecto.Descripcion = dto.Descripcion;
         proyecto.FechaInicio = DateTime.SpecifyKind(dto.FechaInicio, DateTimeKind.Utc);
-        proyecto.FechaFin = DateTime.SpecifyKind(dto.FechaFin, DateTimeKind.Utc);
+        proyecto.FechaFin = fechaFinUtc;
 
         await proyectoRepo.UpdateAsync(proyecto);
         return MapToDto(proyecto);

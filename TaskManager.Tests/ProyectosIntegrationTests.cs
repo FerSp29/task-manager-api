@@ -146,6 +146,17 @@ public class ProyectosIntegrationTests : IDisposable
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
+    [Fact]
+    public async Task GetSwaggerJson_Retorna200YContieneSchemasAvanceProyectosYAvanceTareas()
+    {
+        var response = await _client.GetAsync("/swagger/v1/swagger.json");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var json = await response.Content.ReadAsStringAsync();
+        Assert.Contains("\"AvanceProyectos\"", json);
+        Assert.Contains("\"AvanceTareas\"", json);
+    }
+
     private async Task<ProyectoResponseDto> CrearProyectoAsync(string nombre)
     {
         var dto = new CrearProyectoDto(

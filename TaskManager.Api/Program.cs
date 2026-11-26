@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Api.Middlewares;
+using TaskManager.Application.DTOs;
 using TaskManager.Application.Interfaces;
 using TaskManager.Application.Services;
 using TaskManager.Infrastructure.Data;
@@ -13,7 +14,12 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.CustomSchemaIds(type => type == typeof(ProyectoResponseDto) ? "AvanceProyectos"
+        : type == typeof(TareaResponseDto) ? "AvanceTareas"
+        : type.Name);
+});
 
 // PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>

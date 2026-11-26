@@ -35,7 +35,7 @@ public class TareasIntegrationTests : IDisposable
             ProyectoId: proyecto.Id
         );
 
-        var response = await _client.PostAsJsonAsync("/api/Tareas", dto, CustomWebApplicationFactory.JsonOptions);
+        var response = await _client.PostAsJsonAsync("/api/v1/Tareas", dto, CustomWebApplicationFactory.JsonOptions);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
@@ -62,7 +62,7 @@ public class TareasIntegrationTests : IDisposable
             ProyectoId: proyecto.Id
         );
 
-        var response = await _client.PostAsJsonAsync("/api/Tareas", dto, CustomWebApplicationFactory.JsonOptions);
+        var response = await _client.PostAsJsonAsync("/api/v1/Tareas", dto, CustomWebApplicationFactory.JsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -78,16 +78,16 @@ public class TareasIntegrationTests : IDisposable
         await CrearTareaAsync(proyecto.Id, "Vigente Pendiente", PrioridadTarea.Alta, DateTime.UtcNow.AddDays(5));
 
         await _client.PatchAsJsonAsync(
-            $"/api/Tareas/{vencidaEnProgreso.Id}/estado",
+            $"/api/v1/Tareas/{vencidaEnProgreso.Id}/estado",
             new CambiarEstadoTareaDto(EstadoTarea.EnProgreso),
             CustomWebApplicationFactory.JsonOptions);
 
         await _client.PatchAsJsonAsync(
-            $"/api/Tareas/{vencidaCompletada.Id}/estado",
+            $"/api/v1/Tareas/{vencidaCompletada.Id}/estado",
             new CambiarEstadoTareaDto(EstadoTarea.Completada),
             CustomWebApplicationFactory.JsonOptions);
 
-        var response = await _client.GetAsync("/api/Tareas/vencidas");
+        var response = await _client.GetAsync("/api/v1/Tareas/vencidas");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -109,16 +109,16 @@ public class TareasIntegrationTests : IDisposable
         var enProgresoBaja = await CrearTareaAsync(proyecto.Id, "EnProgreso Baja", PrioridadTarea.Baja, DateTime.UtcNow.AddDays(4));
 
         await _client.PatchAsJsonAsync(
-            $"/api/Tareas/{objetivo.Id}/estado",
+            $"/api/v1/Tareas/{objetivo.Id}/estado",
             new CambiarEstadoTareaDto(EstadoTarea.EnProgreso),
             CustomWebApplicationFactory.JsonOptions);
 
         await _client.PatchAsJsonAsync(
-            $"/api/Tareas/{enProgresoBaja.Id}/estado",
+            $"/api/v1/Tareas/{enProgresoBaja.Id}/estado",
             new CambiarEstadoTareaDto(EstadoTarea.EnProgreso),
             CustomWebApplicationFactory.JsonOptions);
 
-        var responseCombinado = await _client.GetAsync("/api/Tareas?estado=EnProgreso&prioridad=Alta");
+        var responseCombinado = await _client.GetAsync("/api/v1/Tareas?estado=EnProgreso&prioridad=Alta");
         Assert.Equal(HttpStatusCode.OK, responseCombinado.StatusCode);
 
         var filtradas = await responseCombinado.Content.ReadFromJsonAsync<List<TareaResponseDto>>(CustomWebApplicationFactory.JsonOptions);
@@ -126,7 +126,7 @@ public class TareasIntegrationTests : IDisposable
         Assert.Single(filtradas);
         Assert.Equal(objetivo.Id, filtradas[0].Id);
 
-        var responsePorEstado = await _client.GetAsync("/api/Tareas?estado=EnProgreso");
+        var responsePorEstado = await _client.GetAsync("/api/v1/Tareas?estado=EnProgreso");
         Assert.Equal(HttpStatusCode.OK, responsePorEstado.StatusCode);
 
         var enProgreso = await responsePorEstado.Content.ReadFromJsonAsync<List<TareaResponseDto>>(CustomWebApplicationFactory.JsonOptions);
@@ -148,7 +148,7 @@ public class TareasIntegrationTests : IDisposable
             FechaLimite: DateTime.UtcNow.AddDays(20)
         );
 
-        var response = await _client.PutAsJsonAsync($"/api/Tareas/{tarea.Id}", updateDto, CustomWebApplicationFactory.JsonOptions);
+        var response = await _client.PutAsJsonAsync($"/api/v1/Tareas/{tarea.Id}", updateDto, CustomWebApplicationFactory.JsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -156,7 +156,7 @@ public class TareasIntegrationTests : IDisposable
     private async Task<ProyectoResponseDto> CrearProyectoAsync(string nombre, DateTime inicio, DateTime fin)
     {
         var dto = new CrearProyectoDto(nombre, "Descripción", inicio, fin);
-        var response = await _client.PostAsJsonAsync("/api/Proyectos", dto, CustomWebApplicationFactory.JsonOptions);
+        var response = await _client.PostAsJsonAsync("/api/v1/Proyectos", dto, CustomWebApplicationFactory.JsonOptions);
         response.EnsureSuccessStatusCode();
         var creado = await response.Content.ReadFromJsonAsync<ProyectoResponseDto>(CustomWebApplicationFactory.JsonOptions);
         return creado!;
@@ -165,7 +165,7 @@ public class TareasIntegrationTests : IDisposable
     private async Task<TareaResponseDto> CrearTareaAsync(int proyectoId, string titulo, PrioridadTarea prioridad, DateTime fechaLimite)
     {
         var dto = new CrearTareaDto(titulo, "Descripción", prioridad, fechaLimite, proyectoId);
-        var response = await _client.PostAsJsonAsync("/api/Tareas", dto, CustomWebApplicationFactory.JsonOptions);
+        var response = await _client.PostAsJsonAsync("/api/v1/Tareas", dto, CustomWebApplicationFactory.JsonOptions);
         response.EnsureSuccessStatusCode();
         var creada = await response.Content.ReadFromJsonAsync<TareaResponseDto>(CustomWebApplicationFactory.JsonOptions);
         return creada!;

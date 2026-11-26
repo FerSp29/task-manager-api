@@ -32,7 +32,7 @@ public class ProyectosIntegrationTests : IDisposable
             FechaFin: DateTime.UtcNow.AddDays(15)
         );
 
-        var response = await _client.PostAsJsonAsync("/api/Proyectos", dto, CustomWebApplicationFactory.JsonOptions);
+        var response = await _client.PostAsJsonAsync("/api/v1/Proyectos", dto, CustomWebApplicationFactory.JsonOptions);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
@@ -56,7 +56,7 @@ public class ProyectosIntegrationTests : IDisposable
             FechaFin: DateTime.UtcNow
         );
 
-        var response = await _client.PostAsJsonAsync("/api/Proyectos", dto, CustomWebApplicationFactory.JsonOptions);
+        var response = await _client.PostAsJsonAsync("/api/v1/Proyectos", dto, CustomWebApplicationFactory.JsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -67,14 +67,14 @@ public class ProyectosIntegrationTests : IDisposable
         var proyecto = await CrearProyectoAsync("Proyecto Con Pendientes");
         await CrearTareaAsync(proyecto.Id, "Tarea Pendiente 1", PrioridadTarea.Alta, DateTime.UtcNow.AddDays(5));
 
-        var deleteResponse = await _client.DeleteAsync($"/api/Proyectos/{proyecto.Id}");
+        var deleteResponse = await _client.DeleteAsync($"/api/v1/Proyectos/{proyecto.Id}");
 
         Assert.Equal(HttpStatusCode.BadRequest, deleteResponse.StatusCode);
 
         var body = await deleteResponse.Content.ReadAsStringAsync();
         Assert.Contains("pendientes", body, StringComparison.OrdinalIgnoreCase);
 
-        var getResponse = await _client.GetAsync($"/api/Proyectos/{proyecto.Id}");
+        var getResponse = await _client.GetAsync($"/api/v1/Proyectos/{proyecto.Id}");
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
     }
 
@@ -86,13 +86,13 @@ public class ProyectosIntegrationTests : IDisposable
         await CrearTareaAsync(proyecto.Id, "Tarea 2", PrioridadTarea.Media, DateTime.UtcNow.AddDays(4));
 
         var patchResponse = await _client.PatchAsJsonAsync(
-            $"/api/Tareas/{tarea1.Id}/estado",
+            $"/api/v1/Tareas/{tarea1.Id}/estado",
             new CambiarEstadoTareaDto(EstadoTarea.Completada),
             CustomWebApplicationFactory.JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
 
-        var getResponse = await _client.GetAsync($"/api/Proyectos/{proyecto.Id}");
+        var getResponse = await _client.GetAsync($"/api/v1/Proyectos/{proyecto.Id}");
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
 
         var detalle = await getResponse.Content.ReadFromJsonAsync<ProyectoResponseDto>(CustomWebApplicationFactory.JsonOptions);
@@ -110,21 +110,21 @@ public class ProyectosIntegrationTests : IDisposable
         var tarea2 = await CrearTareaAsync(proyecto.Id, "Tarea Final 2", PrioridadTarea.Baja, DateTime.UtcNow.AddDays(3));
 
         var patch1 = await _client.PatchAsJsonAsync(
-            $"/api/Tareas/{tarea1.Id}/estado",
+            $"/api/v1/Tareas/{tarea1.Id}/estado",
             new CambiarEstadoTareaDto(EstadoTarea.Completada),
             CustomWebApplicationFactory.JsonOptions);
         var patch2 = await _client.PatchAsJsonAsync(
-            $"/api/Tareas/{tarea2.Id}/estado",
+            $"/api/v1/Tareas/{tarea2.Id}/estado",
             new CambiarEstadoTareaDto(EstadoTarea.Completada),
             CustomWebApplicationFactory.JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, patch1.StatusCode);
         Assert.Equal(HttpStatusCode.OK, patch2.StatusCode);
 
-        var deleteResponse = await _client.DeleteAsync($"/api/Proyectos/{proyecto.Id}");
+        var deleteResponse = await _client.DeleteAsync($"/api/v1/Proyectos/{proyecto.Id}");
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
-        var getAfterDelete = await _client.GetAsync($"/api/Proyectos/{proyecto.Id}");
+        var getAfterDelete = await _client.GetAsync($"/api/v1/Proyectos/{proyecto.Id}");
         Assert.Equal(HttpStatusCode.NotFound, getAfterDelete.StatusCode);
     }
 
@@ -141,7 +141,7 @@ public class ProyectosIntegrationTests : IDisposable
             FechaFin: DateTime.UtcNow.AddDays(5)
         );
 
-        var response = await _client.PutAsJsonAsync($"/api/Proyectos/{proyecto.Id}", updateDto, CustomWebApplicationFactory.JsonOptions);
+        var response = await _client.PutAsJsonAsync($"/api/v1/Proyectos/{proyecto.Id}", updateDto, CustomWebApplicationFactory.JsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -153,6 +153,10 @@ public class ProyectosIntegrationTests : IDisposable
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var json = await response.Content.ReadAsStringAsync();
+        Assert.Contains("\"v1\"", json);
+        Assert.Contains("TaskManager API", json);
+        Assert.Contains("\"/api/v1/Proyectos\"", json);
+        Assert.Contains("\"/api/v1/Tareas\"", json);
         Assert.Contains("\"AvanceProyectos\"", json);
         Assert.Contains("\"AvanceTareas\"", json);
     }
@@ -166,7 +170,7 @@ public class ProyectosIntegrationTests : IDisposable
             FechaFin: DateTime.UtcNow.AddDays(20)
         );
 
-        var response = await _client.PostAsJsonAsync("/api/Proyectos", dto, CustomWebApplicationFactory.JsonOptions);
+        var response = await _client.PostAsJsonAsync("/api/v1/Proyectos", dto, CustomWebApplicationFactory.JsonOptions);
         response.EnsureSuccessStatusCode();
         var creado = await response.Content.ReadFromJsonAsync<ProyectoResponseDto>(CustomWebApplicationFactory.JsonOptions);
         return creado!;
@@ -182,7 +186,7 @@ public class ProyectosIntegrationTests : IDisposable
             ProyectoId: proyectoId
         );
 
-        var response = await _client.PostAsJsonAsync("/api/Tareas", dto, CustomWebApplicationFactory.JsonOptions);
+        var response = await _client.PostAsJsonAsync("/api/v1/Tareas", dto, CustomWebApplicationFactory.JsonOptions);
         response.EnsureSuccessStatusCode();
         var creada = await response.Content.ReadFromJsonAsync<TareaResponseDto>(CustomWebApplicationFactory.JsonOptions);
         return creada!;

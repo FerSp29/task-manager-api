@@ -5,7 +5,7 @@ using TaskManager.Application.Interfaces;
 namespace TaskManager.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 public class ProyectosController(IProyectoService proyectoService, ITareaService tareaService) : ControllerBase
 {
     [HttpGet]

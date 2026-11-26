@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 using TaskManager.Api.Middlewares;
 using TaskManager.Application.DTOs;
 using TaskManager.Application.Interfaces;
@@ -16,6 +17,12 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "TaskManager API",
+        Version = "v1",
+        Description = "API REST para la gestión de proyectos y tareas."
+    });
     options.CustomSchemaIds(type => type == typeof(ProyectoResponseDto) ? "AvanceProyectos"
         : type == typeof(TareaResponseDto) ? "AvanceTareas"
         : type.Name);
@@ -46,7 +53,10 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "TaskManager API v1");
+});
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

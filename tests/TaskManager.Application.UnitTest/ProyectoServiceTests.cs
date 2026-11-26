@@ -6,7 +6,7 @@ using TaskManager.Domain.Exceptions;
 using TaskManager.Infrastructure.Data;
 using TaskManager.Infrastructure.Repositories;
 
-namespace TaskManager.Tests;
+namespace TaskManager.Application.UnitTest;
 
 public class ProyectoServiceTests
 {

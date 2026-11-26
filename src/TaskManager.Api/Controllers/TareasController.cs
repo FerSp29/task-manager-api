@@ -6,7 +6,7 @@ using TaskManager.Domain.Enums;
 namespace TaskManager.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 public class TareasController(ITareaService tareaService) : ControllerBase
 {
     [HttpGet]

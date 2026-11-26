@@ -1,7 +1,15 @@
 <Solution>
-  <Project Path="TaskManager.Api/TaskManager.Api.csproj" />
-  <Project Path="TaskManager.Application/TaskManager.Application.csproj" />
-  <Project Path="TaskManager.Domain/TaskManager.Domain.csproj" />
-  <Project Path="TaskManager.Infrastructure/TaskManager.Infrastructure.csproj" />
-  <Project Path="TaskManager.Tests/TaskManager.Tests.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/TaskManager.Api/TaskManager.Api.csproj" />
+    <Project Path="src/TaskManager.Application/TaskManager.Application.csproj" />
+    <Project Path="src/TaskManager.Domain/TaskManager.Domain.csproj" />
+    <Project Path="src/TaskManager.Infrastructure/TaskManager.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TaskManager.Api.UnitTest/TaskManager.Api.UnitTest.csproj" />
+    <Project Path="tests/TaskManager.Application.UnitTest/TaskManager.Application.UnitTest.csproj" />
+    <Project Path="tests/TaskManager.Domain.UnitTest/TaskManager.Domain.UnitTest.csproj" />
+    <Project Path="tests/TaskManager.Infrastructure.UnitTest/TaskManager.Infrastructure.UnitTest.csproj" />
+    <Project Path="tests/TaskManager.Tests/TaskManager.Tests.csproj" />
+  </Folder>
 </Solution>

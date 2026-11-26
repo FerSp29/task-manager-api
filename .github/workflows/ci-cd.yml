@@ -29,7 +29,7 @@ jobs:
       run: dotnet test --no-build --configuration Release --verbosity normal
 
     - name: Publish API
-      run: dotnet publish TaskManager.Api/TaskManager.Api.csproj -c Release -o ./publish
+      run: dotnet publish src/TaskManager.Api/TaskManager.Api.csproj -c Release -o ./publish
 
     - name: Upload artifact for deployment
       uses: actions/upload-artifact@v4

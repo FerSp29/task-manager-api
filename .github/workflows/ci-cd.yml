@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 env:
-  AZURE_WEBAPP_NAME: 'tu-app-taskmanager-api' # Reemplaza esto con el nombre exacto de tu Web App en Azure
+  AZURE_WEBAPP_NAME: 'app-saturn-api-fernandoo'
   DOTNET_VERSION: '10.0.x'
 
 jobs:
